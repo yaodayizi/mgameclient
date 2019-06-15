@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="skins.ButtonSkin" width="100" height="50" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<e:Image id="background" source="button_down_png" x="0" y="0" width="100%" height="100%" fillMode="scale" anchorOffsetX="0" anchorOffsetY="0" scale9Grid="1,3,8,8"/>
+	<e:Label id="label" text="Label" x="13" y="10" visible="false"/>
+</e:Skin>

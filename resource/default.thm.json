@@ -1,0 +1,12 @@
+{
+	"skins": {
+		"eui.Button": "resource/eui_skins/ButtonSkin.exml"
+	},
+	"autoGenerateExmlsList": true,
+	"exmls": [
+		"resource/skins/Baijiale.exml",
+		"resource/skins/ButtonSkin.exml",
+		"resource/skins/LoginSkin.exml"
+	],
+	"path": "resource/default.thm.json"
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="LoginSkin" width="640" height="1138" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<w:Config id="16b541b32b6"/>
+	<e:Image y="1" fillMode="scale" anchorOffsetX="0" width="638" anchorOffsetY="0" height="1135" source="resource/assets/common/bg112.png"/>
+	<e:TextInput id="username" width="210" height="36" x="282" y="505" anchorOffsetX="0" anchorOffsetY="0" skinName="skins.ButtonSkin"/>
+	<e:TextInput id="password" width="210" height="36" x="282" y="562" anchorOffsetX="0" anchorOffsetY="0" skinName="skins.ButtonSkin"/>
+	<e:Button id="loginBtn" label="Button" x="287" y="630" skinName="skins.ButtonSkin" height="30"/>
+	<e:Button id="travelBtn" label="Button" x="411" y="630" skinName="skins.ButtonSkin" height="30"/>
+	<e:Label text="用户名" x="158" y="505"/>
+	<e:Label text="密码" x="160" y="563"/>
+</e:Skin>
