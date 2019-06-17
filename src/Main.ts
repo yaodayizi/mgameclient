@@ -58,6 +58,11 @@ class Main extends egret.DisplayObjectContainer {
             console.log(e);
         })
 
+        //inject the custom material parser
+        //注入自定义的素材解析器
+        let assetAdapter = new AssetAdapter();
+        egret.registerImplementation("eui.IAssetAdapter", assetAdapter);
+        egret.registerImplementation("eui.IThemeAdapter", new ThemeAdapter());
 
 
     }
@@ -65,11 +70,11 @@ class Main extends egret.DisplayObjectContainer {
     private async runGame() {
         await this.loadResource()
         this.createGameScene();
-        const result = await RES.getResAsync("description_json")
+/*        const result = await RES.getResAsync("description_json")
         this.startAnimation(result);
         await platform.login();
         const userInfo = await platform.getUserInfo();
-        console.log(userInfo);
+        console.log(userInfo);*/
     }
  /*       var route = 'gate.gateHandler.queryEntry';
         this.pomelo = new Pomelo();
@@ -147,12 +152,24 @@ class Main extends egret.DisplayObjectContainer {
             await RES.loadGroup("preload", 0, loadingView);
             await RES.loadGroup("common",2,loadingView);
             await RES.loadGroup("card",1,loadingView);
-
+            await this.loadTheme();
             this.stage.removeChild(loadingView);
         }
         catch (e) {
             console.error(e);
         }
+    }
+
+    private loadTheme() {
+        return new Promise((resolve, reject) => {
+            // load skin theme configuration file, you can manually modify the file. And replace the default skin.
+            //加载皮肤主题配置文件,可以手动修改这个文件。替换默认皮肤。
+            let theme = new eui.Theme("resource/default.thm.json", this.stage);
+            theme.addEventListener(eui.UIEvent.COMPLETE, () => {
+                resolve();
+            }, this);
+
+        })
     }
 
     private textfield: egret.TextField;
@@ -163,9 +180,21 @@ class Main extends egret.DisplayObjectContainer {
      */
     private createGameScene() {
         let loginPanel:LoginPanel = new LoginPanel();
+        LCP.LListener.getInstance().addEventListener(EventData.Data.LOGIN_SUCCESS,function(event){
+            let ret = event.param;
+            if(ret.code!=200){
+                TipsUtil.alert(ret.err.msg,{},this);
+                console.log(ret.err.msg,ret.err);
+                return;
+            }
+            Global.user = ret.data.user;
+            this.removeChild(loginPanel);
+            let baijialePanel:BaijialePanel = new BaijialePanel();
+            this.addChild(baijialePanel);
+
+        },this);
         this.addChild(loginPanel);
 
-        
 /*        let sky = this.createBitmapByName("bg_jpg");
         this.addChild(sky);
         let stageW = this.stage.stageWidth;

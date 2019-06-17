@@ -1,6 +1,6 @@
 class LoginPanel extends eui.Component {
-	public username:eui.TextInput;
-	public password:eui.TextInput;
+	public username:eui.EditableText;
+	public password:eui.EditableText;
 	public loginBtn:eui.Button;
 	public travelBtn:eui.Button;
 
@@ -8,6 +8,7 @@ class LoginPanel extends eui.Component {
 		super();
 		this.skinName = "resource/skins/LoginSkin.exml";
 		Net.SocketUtil.connect('127.0.0.1',9115);
+		this.loginBtn.addEventListener(egret.TouchEvent.TOUCH_TAP,this.loginBtnClick,this);
 	}
 
 	private loginBtnClick(e){
@@ -22,7 +23,17 @@ class LoginPanel extends eui.Component {
 
 		Net.SocketUtil.login(this.username.text,this.password.text,function(res){
 			console.log('login',res);
-		})
+			
+			if(res.code ==200){
+				LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.LOGIN_SUCCESS,res));
+			}else{
+				TipsUtil.alert(res.err.msg,function(){},this);
+			}
+		}.bind(this));
+
+	}
+
+	public dispose(){
 
 	}
 

@@ -9,7 +9,7 @@
 			"name": "card"
 		},
 		{
-			"keys": "b_n_jpg,bai1_n_jpg,bai2_n_png,brnnstate_0_png,brnnstate_1_png,brnnstate_2_png,chip_png,chip_b1_png,chip_b5_png,chip_q1_png,chip_q5_png,chip_w1_png,chip_w5_png,dazhexian_png,exit_n_png,exit_y_png,la28-2_n_png,la28-3_n_png,nt1_n_png,nt_n_png,pk_back_png,po9_n_png,px2_n_png,px3_n_png,shu_png,state_0_png,state_1_png,state_2_png,wen24_n_png,wen25_n_png,wen50_n_png,wen51_n_png,x_n_png,x_y_png,xiao1_n_png,xiao2_n_png,xiaolight_n_png,ying_png",
+			"keys": "b_n_jpg,bai1_n_jpg,bai2_n_png,brnnstate_0_png,brnnstate_1_png,brnnstate_2_png,chip_png,chip_b1_png,chip_b5_png,chip_q1_png,chip_q5_png,chip_w1_png,chip_w5_png,dazhexian_png,exit_n_png,exit_y_png,la28-2_n_png,la28-3_n_png,nt1_n_png,nt_n_png,pk_back_png,po9_n_png,px2_n_png,px3_n_png,shu_png,state_0_png,state_1_png,state_2_png,wen24_n_png,wen25_n_png,wen50_n_png,wen51_n_png,x_n_png,x_y_png,xiao1_n_png,xiao2_n_png,xiaolight_n_png,ying_png,loading.txtbg_png",
 			"name": "common"
 		},
 		{
@@ -504,9 +504,14 @@
 			"name": "bjl_table_jpg"
 		},
 		{
-			"name": "bg112_png",
+			"url": "assets/common/bg112.png",
 			"type": "image",
-			"url": "assets/common/bg112.png"
+			"name": "bg112_png"
+		},
+		{
+			"url": "assets/common/loading.txtbg.png",
+			"type": "image",
+			"name": "loading.txtbg_png"
 		}
 	]
 }

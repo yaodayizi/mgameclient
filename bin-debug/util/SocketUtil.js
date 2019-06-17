@@ -22,6 +22,12 @@ var Net;
             this.pomelo.on('disconnect', function (res) {
                 console.log('disconnect');
             });
+            this.pomelo.on('close', function (res) {
+                console.log('close');
+            });
+            this.pomelo.on('heartbeat timeout', function (res) {
+                console.log('heartbeat timeout');
+            });
             this.pomelo.init({ host: host, port: port, log: true }, function (res0) {
                 this.pomelo.request('gate.gateHandler.queryEntry', {}, function (res) {
                     this.pomelo.disconnect();
@@ -44,7 +50,7 @@ var Net;
         }
         SocketUtil.connectGameServer = connectGameServer;
         function login(username, password, callback) {
-            this.pomelo.request('connector.entryHandler.login', { username: 'test1', password: '123456' }, function (ret) {
+            this.pomelo.request('connector.entryHandler.login', { username: username, password: password }, function (ret) {
                 callback(ret);
             }.bind(this));
         }
@@ -59,4 +65,3 @@ var Net;
         SocketUtil.addHandler = addHandler;
     })(SocketUtil = Net.SocketUtil || (Net.SocketUtil = {}));
 })(Net || (Net = {}));
-//# sourceMappingURL=SocketUtil.js.map

@@ -14,6 +14,7 @@ var LoginPanel = (function (_super) {
         var _this = _super.call(this) || this;
         _this.skinName = "resource/skins/LoginSkin.exml";
         Net.SocketUtil.connect('127.0.0.1', 9115);
+        _this.loginBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, _this.loginBtnClick, _this);
         return _this;
     }
     LoginPanel.prototype.loginBtnClick = function (e) {
@@ -27,7 +28,15 @@ var LoginPanel = (function (_super) {
         }
         Net.SocketUtil.login(this.username.text, this.password.text, function (res) {
             console.log('login', res);
-        });
+            if (res.code == 200) {
+                LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.LOGIN_SUCCESS, res));
+            }
+            else {
+                TipsUtil.alert(res.err.msg, function () { }, this);
+            }
+        }.bind(this));
+    };
+    LoginPanel.prototype.dispose = function () {
     };
     return LoginPanel;
 }(eui.Component));
