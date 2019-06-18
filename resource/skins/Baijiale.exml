@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin class="Baijiale" width="640" height="1138" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
 	<e:Image source="bjl_table_jpg" x="0" y="0" width="640" height="1138" locked="true"/>
-	<e:Rect id="imgMask" width="597" height="232" x="20" y="288" anchorOffsetX="0" anchorOffsetY="0" fillAlpha="0.5"/>
+	<e:Rect id="imgMask" width="597" height="232" x="20" y="288" anchorOffsetX="0" anchorOffsetY="0" fillAlpha="0.5" locked="true"/>
 	<e:Group id="chipGroup" x="127" y="974">
 		<e:Image name="c100" source="chip_b1_png" x="0" y="0"/>
 		<e:Image name="c500" source="chip_b5_png" x="85" y="0"/>
 		<e:Image name="c1000" source="chip_q1_png" x="170" y="0"/>
 		<e:Image name="c5000" source="chip_q5_png" x="255" y="0"/>
 	</e:Group>
-	<e:Group id="cardGroupPlayer" width="200" height="219" x="112" y="293" anchorOffsetY="0" visible="false" locked="true">
-		<e:Image name="p1" source="10B_png" x="5" y="6" anchorOffsetX="0" width="87" anchorOffsetY="0" height="120.83"/>
-		<e:Image name="p2" source="10B_png" x="113" y="6" anchorOffsetX="0" width="87" anchorOffsetY="0" height="120.83"/>
-		<e:Image name="p3" source="10B_png" x="31.71" y="219" anchorOffsetX="0" width="87" anchorOffsetY="0" height="120.83" rotation="269.84"/>
+	<e:Group id="cardGroupPlayer" width="200" height="219" x="94" y="294.5" anchorOffsetY="0" visible="false">
+		<e:Image name="p1" source="10B_png" x="54.5" y="59" anchorOffsetX="44" width="88" anchorOffsetY="60" height="120"/>
+		<e:Image name="p2" source="10B_png" x="148" y="59.17" anchorOffsetX="44" width="88" anchorOffsetY="60" height="120"/>
+		<e:Image name="p3" source="10B_png" x="92.38" y="166.21" anchorOffsetX="44" width="88" anchorOffsetY="60" height="120" rotation="269.84"/>
 	</e:Group>
-	<e:Group id="cardGroupBanker" width="200" height="219" x="362" y="300" anchorOffsetY="0" visible="false" locked="true">
-		<e:Image name="b1" source="10B_png" x="5" y="6" anchorOffsetX="0" width="87" anchorOffsetY="0" height="120.83"/>
-		<e:Image name="b2" source="10B_png" x="113" y="6" anchorOffsetX="0" width="87" anchorOffsetY="0" height="120.83"/>
-		<e:Image name="b3" source="10B_png" x="31.71" y="219" anchorOffsetX="0" width="87" anchorOffsetY="0" height="120.83" rotation="269.84"/>
+	<e:Group id="cardGroupBanker" width="200" height="219" x="413" y="292" anchorOffsetY="0" visible="false">
+		<e:Image name="b1" source="10B_png" x="55" y="60" anchorOffsetX="44" width="88" anchorOffsetY="60" height="120"/>
+		<e:Image name="b2" source="10B_png" x="151" y="59" anchorOffsetX="44" width="88" anchorOffsetY="60" height="120"/>
+		<e:Image name="b3" source="10B_png" x="100" y="165.83" anchorOffsetX="44" width="88" anchorOffsetY="60" height="120" rotation="269.84"/>
 	</e:Group>
-	<e:Group id="statusText" x="0" y="607" visible="false">
+	<e:Group id="statusText" x="0" y="607">
 		<e:Rect  name="statusMask" width="641" height="138" x="0" y="0" anchorOffsetX="0" anchorOffsetY="0" strokeAlpha="0.8" fillAlpha="0.54"/>
-		<e:Label  name = "statusLabel" text="开始游戏" x="144" y="29" anchorOffsetX="0" width="352" anchorOffsetY="0" height="68" size="47" fontFamily="Microsoft YaHei" textAlign="center"/>
-	</e:Group>Group>
+		<e:Label id="statusLabel"  name = "statusLabel" text="aaa" x="144" y="29" anchorOffsetX="0" width="352" anchorOffsetY="0" height="68" size="47" fontFamily="Microsoft YaHei" textAlign="center"/>
+	</e:Group>
+	<e:Label id="playerPointLabel" text="8" x="32.5" y="295" anchorOffsetY="0" height="114" size="80" fontFamily="Arial" visible="false"/>
+	<e:Label id="bankerPointLabel" text="8" x="353.5" y="294" anchorOffsetY="0" height="114" size="80" fontFamily="Arial" visible="false"/>Group>
 </e:Skin>

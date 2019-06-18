@@ -139,4 +139,3 @@ var TipsUtil;
     }
     TipsUtil.tips = tips;
 })(TipsUtil || (TipsUtil = {}));
-//# sourceMappingURL=TipsUitl.js.map

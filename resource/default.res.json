@@ -5,7 +5,7 @@
 			"name": "preload"
 		},
 		{
-			"keys": "10A_png,10B_png,10C_png,10D_png,11A_png,11B_png,11C_png,11D_png,12A_png,12B_png,12C_png,12D_png,13A_png,13B_png,13C_png,13D_png,1A_png,1B_png,1C_png,1D_png,2A_png,2B_png,2C_png,2D_png,3A_png,3B_png,3C_png,3D_png,4A_png,4B_png,4C_png,4D_png,5A_png,5B_png,5C_png,5D_png,6A_png,6B_png,6C_png,6D_png,7A_png,7B_png,7C_png,7D_png,8A_png,8B_png,8C_png,8D_png,9A_png,9B_png,9C_png,9D_png,back_png",
+			"keys": "10A_png,10B_png,10C_png,10D_png,11A_png,11B_png,11C_png,11D_png,12A_png,12B_png,12C_png,12D_png,13A_png,13B_png,13C_png,13D_png,1A_png,1B_png,1C_png,1D_png,2A_png,2B_png,2C_png,2D_png,3A_png,3B_png,3C_png,3D_png,4A_png,4B_png,4C_png,4D_png,5A_png,5B_png,5C_png,5D_png,6A_png,6B_png,6C_png,6D_png,7A_png,7B_png,7C_png,7D_png,8A_png,8B_png,8C_png,8D_png,9A_png,9B_png,9C_png,9D_png,single_back_png,stack_back_png",
 			"name": "card"
 		},
 		{
@@ -304,11 +304,6 @@
 			"name": "9D_png"
 		},
 		{
-			"url": "assets/card/bai19_n.png",
-			"type": "image",
-			"name": "back_png"
-		},
-		{
 			"url": "assets/common/b_n.jpg",
 			"type": "image",
 			"name": "b_n_jpg"
@@ -512,6 +507,16 @@
 			"url": "assets/common/loading.txtbg.png",
 			"type": "image",
 			"name": "loading.txtbg_png"
+		},
+		{
+			"url": "assets/card/single_back.png",
+			"type": "image",
+			"name": "single_back_png"
+		},
+		{
+			"url": "assets/card/stack_back.png",
+			"type": "image",
+			"name": "stack_back_png"
 		}
 	]
 }
