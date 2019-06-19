@@ -59,6 +59,13 @@ module Net.SocketUtil {
 			this.pomelo.request('connector.entryHandler.enterGame',{gameType:gameType,token:token},callback);
 		}
 
+		export function sendBet(pos,coin,callback){
+			console.log('bet=========',pos,coin);
+			this.pomelo.request('bjl.gameHandler.bet',{pos:pos,coin:coin},function(ret){
+				callback(ret);
+			});
+		}
+
 		export function addHandler(event,callback){
 			this.pomelo.on(event,callback);
 		}

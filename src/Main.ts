@@ -48,10 +48,12 @@ class Main extends egret.DisplayObjectContainer {
 
         egret.lifecycle.onPause = () => {
             egret.ticker.pause();
+            console.log('pause--------');
         }
 
         egret.lifecycle.onResume = () => {
             egret.ticker.resume();
+            console.log('resume--------');
         }
 
         this.runGame().catch(e => {

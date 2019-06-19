@@ -17,6 +17,8 @@ module EventData{
     export var GameResult = {
         TIE:'tie',
         BANKER:'banker',
-        player:'player'
+        player:'player',
+        BOTH:'both',
+        NO_PAIR:'none'
     }
 }

@@ -3,17 +3,25 @@ class BaijialePanel extends eui.Component {
 	private chipGroup: eui.Group;
 	private cardGroupPlayer: eui.Group;
 	private cardGroupBanker: eui.Group;
+	private betPosGroup:eui.Group;
+
 	private statusText: eui.Group;
 	private statusLabel:eui.Label;
 	private playerCards = [];
 	private bankerCards = [];
 	private result = {};
+	private chips = [];
+	private betPos = [];
+	private bets = {};
+	private selectedChipImg:eui.Image;
+	private selectedChipVal = 0;
 	private suitMapping = { "spade": "A", "heart": "B", "club": "C", "diamond": "D" };
 	private cardWidth = 0;
 	private statusTextTimeout = 0;
 	private dealTimeout = 0;
 	private playerPointLabel:eui.Label;
 	private bankerPointLabel:eui.Label;
+
 
 	public constructor() {
 		super();
@@ -33,20 +41,21 @@ class BaijialePanel extends eui.Component {
 
 		Net.SocketUtil.addHandler(EventData.Data.GAME_START, function (ret) {
 			console.log(EventData.Data.GAME_START, ret);
-			this.cardGroupPlayer.visible = false;
-			this.cardGroupBanker.visible = false;
-			this.bankerPointLabel.visible = true;
-			this.playerPointLabel.visible = true;
-
 			//this.setStatusText('开始游戏');
 
 		}.bind(self));
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_ENTER, function (ret) {
 			this.setStatusText('已开局请下注');
 			console.log(EventData.Data.GAME_BET_ENTER, ret);
+			this.betPos.forEach(function(val,index){
+				val.touchEnabled = true;
+			});
 		}.bind(self));
 
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_LEAVA, function (ret) {
+			this.betPos.forEach(function(val,index){
+				val.touchEnabled = false;
+			});
 			console.log(EventData.Data.GAME_BET_LEAVA, ret);
 			this.setStatusText('下注结束');
 		}.bind(self));
@@ -64,12 +73,36 @@ class BaijialePanel extends eui.Component {
 
 		Net.SocketUtil.enterGame(1000, Global.user.token, function (ret) {
 			console.log('enter_game', ret);
-
+			this.hideEl();
 			//LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent('enter_game',ret));
 		}.bind(self));
 
-		this.setCards(this.cardGroupPlayer, this.playerCards);
-		this.setCards(this.cardGroupBanker, this.bankerCards);
+		this.imgMask.visible = false;
+		this.getArrByGroup(this.cardGroupPlayer, this.playerCards);
+		this.getArrByGroup(this.cardGroupBanker, this.bankerCards);
+		this.getArrByGroup(this.chipGroup,this.chips);
+		this.getArrByGroup(this.betPosGroup,this.betPos);
+		this.chipSelected(this.chips[0]);
+		this.chips.forEach(function(val,index){
+			let chip:eui.Image = <eui.Image>val;
+			chip.touchEnabled = true;
+			chip.addEventListener(egret.TouchEvent.TOUCH_TAP,this.chipClick,this);
+		}.bind(this));
+
+		this.betPos.forEach(function(val,index){
+			let rect:eui.Rect = <eui.Rect>val;
+			rect.touchEnabled = false;
+			rect.addEventListener(egret.TouchEvent.TOUCH_TAP,this.betPosClick,this);
+			let pos = rect.name.replace('betPos_','');
+			this.bets[pos] = {
+				gold:0
+			}
+		}.bind(this));
+		
+
+		//this.betPosGroup
+
+
 		LCP.LListener.getInstance().addEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
 
 /*		let ret = {
@@ -105,10 +138,7 @@ class BaijialePanel extends eui.Component {
 		}.bind(this));
 		this.cardGroupPlayer.visible = true;
 		this.cardGroupBanker.visible = true;
-		/*		let stack = [this.playerCards[0],this.bankerCards[0],this.playerCards[1],this.bankerCards[1],this.playerCards[2],this.bankerCards[2]];
-				let card = stack.shift();
-				let width = card.width;*/
-		//this.playerCards[0].visible = true;
+		this.imgMask.visible = true;
 
 		let j = 0;
 		let i = 0;
@@ -119,15 +149,13 @@ class BaijialePanel extends eui.Component {
 			let data;
 			if (pos == 'player') {
 				data = ret.cards[pos][i];
-				let attr = i > 1 ? 'height' : 'width';
-				this.dealEff(this[pos+'Cards'][i],data,attr);
+				this.dealEff(this[pos+'Cards'][i],data);
 				i++;
 				pos = 'banker';
 				m = j;
 			} else {
 				data = ret.cards[pos][j];
-				let attr = i > 1 ? 'height' : 'width';
-				this.dealEff(this[pos+'Cards'][j],data,attr);
+				this.dealEff(this[pos+'Cards'][j],data);
 				pos = 'player';
 				j++;
 				m = i;
@@ -145,7 +173,7 @@ class BaijialePanel extends eui.Component {
 
 	}
 
-	private dealEff(card, retCardVal, attr) {
+	private dealEff(card, retCardVal) {
 		let change = function (obj) {
 			if (card.scaleX == 0) {
 				let value = this.getCardVal(obj.cardVal);
@@ -153,11 +181,11 @@ class BaijialePanel extends eui.Component {
 				obj.card.texture =texture;
 			}
 		}
-		let attrVal = card[attr];
+		let attrVal = card.scaleX;
 
 		//let toObj = attr == 'width' ? {width:0} : {height:0};
 		//let toObj2 = attr == 'width' ? {width:attrVal} : {height:attrVal};
-		let params = { card: card, cardVal: retCardVal,attr:attr };
+		let params = { card: card, cardVal: retCardVal};
 		var tw = egret.Tween.get(card, {})
 			.to({ visible: true }, 100)
 			.to({scaleX:0}, 200).call(change, this, [params])
@@ -176,7 +204,7 @@ class BaijialePanel extends eui.Component {
 		this.bankerPointLabel.visible = true;
 		this.playerPointLabel.visible = true;
 		let str = '';
-		switch(this.result['win']){
+		switch(this.result['result']['win']){
 			case EventData.GameResult.TIE:
 				str = '和';
 				break;
@@ -187,23 +215,49 @@ class BaijialePanel extends eui.Component {
 				str = '闲赢';
 				break;
 		}
+		if(this.result['result']['pair']!=EventData.GameResult.NO_PAIR){
+			str+=' \n ';
+		}
+		switch(this.result['result']['pair']){
+			case EventData.GameResult.BOTH:
+				str+='庄对 闲对';
+				break;
+			case EventData.GameResult.BANKER:
+				str+='庄对';
+				break;
+			case EventData.GameResult.player:
+				str+='闲对';
+				break;
+			
+		}
 
 		setTimeout(function(){
+			this.hideEl();
+			this.clearBet();
+		}.bind(this),15000);
+		console.log(str);
+		this.setStatusText(str,15000);
+
+	}
+
+	private hideEl(){
+			
+			this.cardGroupPlayer.visible = false;
+			this.cardGroupBanker.visible = false;
 			this.bankerPointLabel.visible = false;
 			this.playerPointLabel.visible = false;
-
-		}.bind(this),1000)
-		this.setStatusText(str,1000);
-
+			this.imgMask.visible = false;
 	}
 
-	private setCards(cards, arr) {
-		let childrenNum = cards.numChildren;
+
+	private getArrByGroup(group, arr) {
+		let childrenNum = group.numChildren;
 		for (let i = 0; i < childrenNum; i++) {
-			var img:eui.Image = <eui.Image>cards.getChildAt(i);
-			arr.push(img);
+			var item = group.getChildAt(i);
+			arr.push(item);
 		}
 	}
+
 
 
 
@@ -228,5 +282,74 @@ class BaijialePanel extends eui.Component {
 		}
 		return val + suit;
 	}
+
+	private chipClick(e:egret.TouchEvent){
+		let chip:eui.Image = <eui.Image>e.target;
+		this.chipSelected(chip);
+	}
+
+	private chipSelected(chip:eui.Image){
+		chip.scaleX = chip.scaleY = 1.2;
+		this.selectedChipImg = chip;
+		this.selectedChipVal = parseInt(chip.name.replace('c',''));
+
+		this.chips.forEach(function(val,index){
+			let item:eui.Image = <eui.Image>val;
+			if(item.name != chip.name){
+				item.scaleX = item.scaleY = 1;
+			}
+		}.bind(this));
+
+	}
+
+	private betPosClick(e:egret.TouchEvent){
+		let rect:eui.Rect = <eui.Rect>e.target;
+		let pos = rect.name.replace('betPos_','');
+		this.chipSelected
+		//this.bets[pos][this.selectedChipVal]['count'] ++;
+		this.bets[pos]['gold'] += this.selectedChipVal;
+		let point:egret.Point = new egret.Point();
+		rect.globalToLocal(e.stageX,e.stageY,point);
+		let img:eui.Image = new eui.Image(this.selectedChipImg.texture);
+		img.scaleX = img.scaleY = 0.5;
+		rect.addChild(img);
+		img.x = point.x;
+		img.y = point.y;
+		//let de = this.debounce(this.sendBet,300);
+		//de(pos,this.[pos]['gold']);
+
+
+		this.debounce(this.sendBet,300)(pos,this.bets[pos]['gold']); 
+	}
+
+	private sendBet(pos,coin){
+		Net.SocketUtil.sendBet(pos,coin,function(ret){
+			console.log(ret);
+		});
+	}
+
+	private clearBet(){
+		this.betPos.forEach(function(val,index){
+			let rect:eui.Rect = <eui.Rect>val;
+			let num = rect.numChildren;
+			for(let i=rect.numChildren-1;i>=0;i--){
+				rect.removeChildAt(i);
+			}
+		})
+	}
+
+	private debounce(fun,wait){
+		var timeid = 0;
+		return function(pos,coin){
+			var context = this;
+			var args = arguments;
+			clearTimeout(timeid);
+			timeid = setTimeout(function(){
+				fun.apply(context,args);
+			},wait);
+		}
+	}
+
+
 
 }
