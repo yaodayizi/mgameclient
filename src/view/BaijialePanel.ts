@@ -4,6 +4,7 @@ class BaijialePanel extends eui.Component {
 	private cardGroupPlayer: eui.Group;
 	private cardGroupBanker: eui.Group;
 	private betPosGroup:eui.Group;
+	private userHeadPanel:UserHeadPanel;
 
 	private statusText: eui.Group;
 	private statusLabel:eui.Label;
@@ -12,6 +13,8 @@ class BaijialePanel extends eui.Component {
 	private result = {};
 	private chips = [];
 	private betPos = [];
+	//其他人下注
+	private otherBets = {};
 	private bets = {};
 	private selectedChipImg:eui.Image;
 	private selectedChipVal = 0;
@@ -60,6 +63,27 @@ class BaijialePanel extends eui.Component {
 			this.setStatusText('下注结束');
 		}.bind(self));
 
+		//其他玩家下注
+		Net.SocketUtil.addHandler(EventData.Data.GAME_BET, function (ret) {
+			if(ret.uid == Global.user.userid){
+				return;
+			}
+			this.otherBets[ret.uid] = ret;
+			let rectName = 'betPos_'+ret.pos;
+			let chipName = 'C'+ret.chipType;
+			let rect:eui.Rect = this.betPosGroup.getChildByName(rectName);
+			let chip:eui.Image = this.chipGroup.getChildByName(chipName);
+			let x = Math.round(rect.width * Math.random());
+			let y = Math.round(rect.height*Math.random());
+			console.log('uid:',ret.uid,'下注:',ret.coin);
+			for(let i=0;i<ret.num;i++){
+				this.addBetInReac(rect,chip,x,y);
+			}
+			
+
+			
+		}.bind(self));
+
 		Net.SocketUtil.addHandler(EventData.Data.GAME_END, function (ret) {
 			console.log(EventData.Data.GAME_END, ret);
 			this.result = ret;
@@ -95,7 +119,8 @@ class BaijialePanel extends eui.Component {
 			rect.addEventListener(egret.TouchEvent.TOUCH_TAP,this.betPosClick,this);
 			let pos = rect.name.replace('betPos_','');
 			this.bets[pos] = {
-				gold:0
+				gold:0,
+				count:0
 			}
 		}.bind(this));
 		
@@ -104,6 +129,9 @@ class BaijialePanel extends eui.Component {
 
 
 		LCP.LListener.getInstance().addEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
+
+		this.userHeadPanel.gold = Global.user.gold;
+		this.userHeadPanel.userName = Global.user.user_name;
 
 /*		let ret = {
 			 "result": { "pair": "none", "win": "banker", "natural": "none" }, 
@@ -305,27 +333,48 @@ class BaijialePanel extends eui.Component {
 	private betPosClick(e:egret.TouchEvent){
 		let rect:eui.Rect = <eui.Rect>e.target;
 		let pos = rect.name.replace('betPos_','');
-		this.chipSelected
 		//this.bets[pos][this.selectedChipVal]['count'] ++;
 		this.bets[pos]['gold'] += this.selectedChipVal;
+		this.bets[pos]['count'] ++;
 		let point:egret.Point = new egret.Point();
-		rect.globalToLocal(e.stageX,e.stageY,point);
-		let img:eui.Image = new eui.Image(this.selectedChipImg.texture);
-		img.scaleX = img.scaleY = 0.5;
-		rect.addChild(img);
-		img.x = point.x;
-		img.y = point.y;
+		let offsetX = Math.round(Math.random()*10-5);
+		let offsetY = Math.round(Math.random()*10-5);
+		rect.globalToLocal(e.stageX,e.stageY);
+		console.log('---1',point.x,point.y);
+
+		let img = this.addBetInReac(rect,this.selectedChipImg,point.x,point.y);
 		//let de = this.debounce(this.sendBet,300);
 		//de(pos,this.[pos]['gold']);
 
-
-		this.debounce(this.sendBet,300)(pos,this.bets[pos]['gold']); 
+		
+		this.debounce(this.sendBet,500)(pos,this.bets[pos].gold,this.selectedChipVal,this.bets[pos].count,img,rect); 
 	}
 
-	private sendBet(pos,coin){
-		Net.SocketUtil.sendBet(pos,coin,function(ret){
+	private addBetInReac(rect:eui.Rect,chipImg:eui.Image,x,y){
+		let img:eui.Image = new eui.Image(chipImg.texture);
+		img.scaleX = img.scaleY = 0.5;
+		rect.addChild(img);
+		img.x = x;
+		img.y = y;
+		console.log('---2',x,y);
+		return img;
+	}
+
+	private sendBet(pos,coin,chipType,num,img,rect){
+		this.bets[pos]['gold'] = 0;
+		this.bets[pos]['count'] =0;
+		Net.SocketUtil.sendBet(pos,coin,chipType,num,function(ret){
 			console.log(ret);
-		});
+			if(ret!="OK"){
+				rect.removeChild(img);
+				console.log(ret,'下注失败');
+				this.bets[pos]['gold'] = 0;
+				this.bets[pos]['count'] = 0;
+
+			}else{
+				this.userHeadPanel.gold -= coin;
+			}
+		}.bind(this));
 	}
 
 	private clearBet(){
@@ -340,8 +389,9 @@ class BaijialePanel extends eui.Component {
 
 	private debounce(fun,wait){
 		var timeid = 0;
-		return function(pos,coin){
-			var context = this;
+		var context = this;
+		return function(pos,coin,chipType,num,img,rect){
+			
 			var args = arguments;
 			clearTimeout(timeid);
 			timeid = setTimeout(function(){
@@ -349,7 +399,6 @@ class BaijialePanel extends eui.Component {
 			},wait);
 		}
 	}
-
 
 
 }

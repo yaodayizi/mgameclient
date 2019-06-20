@@ -5,6 +5,7 @@ module EventData{
                 PLAYER_ENTER:"playerEnter",
                 PLAYER_LEVA:"playerLeava",
                 GAME_START:"gameStart",
+                GAME_BET:"gameBet",
                 GAME_BET_ENTER:"gameBetEnter",
                 GAME_BET_LEAVA:"gameBetLeava",
                 GAME_CHECK:"gameCheck",

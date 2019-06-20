@@ -1,11 +1,21 @@
 {
-  "16b541b32b6": {
-    "backgroundX": 0,
-    "backgroundY": 0,
-    "backgroundWidth": -1,
-    "backgroundHeight": -1,
-    "useBgImage": true,
-    "useBgColor": true,
-    "backgroundAlpha": 100
-  }
+    "16b541b32b6": {
+        "backgroundX": 0,
+        "backgroundY": 0,
+        "backgroundWidth": -1,
+        "backgroundHeight": -1,
+        "useBgImage": true,
+        "useBgColor": true,
+        "backgroundAlpha": 100
+    },
+    "16b74344a8b": {
+        "path": "..\\resource\\skins\\UserHeadSkin.ts",
+        "class": "UserHeadSkin",
+        "parentPath": ""
+    },
+    "16b743513ac": {
+        "path": "..\\resource\\skins\\UserHeadSkin.ts",
+        "class": "UserHeadSkin",
+        "parentPath": ""
+    }
 }
