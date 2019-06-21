@@ -60,7 +60,7 @@ module Net.SocketUtil {
 		}
 
 		export function sendBet(pos,coin,chipType,num,callback){
-			console.log('bet=========',pos,coin);
+			
 			this.pomelo.request('bjl.gameHandler.bet',{pos:pos,coin:coin,chipType,num},function(ret){
 				callback(ret);
 			});

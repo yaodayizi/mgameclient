@@ -11,20 +11,21 @@
 		"libs/pomelo/pomelo.js"
 	],
 	"game": [
-		"bin-debug/data/Global.js",
+		"bin-debug/data/User.js",
 		"bin-debug/AssetAdapter.js",
 		"bin-debug/Main.js",
 		"bin-debug/Platform.js",
 		"bin-debug/ThemeAdapter.js",
 		"bin-debug/data/ConfigData.js",
 		"bin-debug/data/EventData.js",
+		"bin-debug/data/Global.js",
 		"bin-debug/LoadingUI.js",
-		"bin-debug/data/User.js",
 		"bin-debug/util/LEvent.js",
 		"bin-debug/util/LListener.js",
 		"bin-debug/util/SocketUtil.js",
 		"bin-debug/util/TipsUitl.js",
 		"bin-debug/view/BaijialePanel.js",
-		"bin-debug/view/LoginPanel.js"
+		"bin-debug/view/LoginPanel.js",
+		"bin-debug/view/UserHeadPanel.js"
 	]
 }

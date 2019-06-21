@@ -31,6 +31,7 @@
 		<e:Rect name="statusMask" width="641" height="138" x="0" y="0" anchorOffsetX="0" anchorOffsetY="0" strokeAlpha="0.8" fillAlpha="0.54"/>
 		<e:Label id="statusLabel" name="statusLabel" text="aaa" x="144" y="29" anchorOffsetX="0" width="352" anchorOffsetY="0" height="68" size="47" fontFamily="Microsoft YaHei" textAlign="center"/>
 	</e:Group>
-	<ns1:UserHeadPanel id="userHeadPanel" width="200" height="95" x="440" y="1043" skinName="UserHeadSkin"/>Group>
+	<ns1:UserHeadPanel id="userHeadPanel" width="200" height="95" x="440" y="1043" skinName="UserHeadSkin"/>
+	<e:Label id="timerLabel" text="" x="454" y="924" anchorOffsetX="0" width="186" anchorOffsetY="0" height="81"/>Group>
 
 </e:Skin>

@@ -6,3 +6,5 @@ declare module skins{
 }
 declare class LoginSkin extends eui.Skin{
 }
+declare class UserHeadSkin extends eui.Skin{
+}

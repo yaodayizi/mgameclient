@@ -47,7 +47,7 @@ class Main extends egret.DisplayObjectContainer {
         })
 
         egret.lifecycle.onPause = () => {
-            egret.ticker.pause();
+            //egret.ticker.pause();
             console.log('pause--------');
         }
 

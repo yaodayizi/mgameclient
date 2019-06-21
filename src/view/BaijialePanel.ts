@@ -8,6 +8,7 @@ class BaijialePanel extends eui.Component {
 
 	private statusText: eui.Group;
 	private statusLabel:eui.Label;
+	private timerLabel:eui.Label;
 	private playerCards = [];
 	private bankerCards = [];
 	private result = {};
@@ -16,6 +17,7 @@ class BaijialePanel extends eui.Component {
 	//其他人下注
 	private otherBets = {};
 	private bets = {};
+	private betsTotal = {};
 	private selectedChipImg:eui.Image;
 	private selectedChipVal = 0;
 	private suitMapping = { "spade": "A", "heart": "B", "club": "C", "diamond": "D" };
@@ -24,6 +26,9 @@ class BaijialePanel extends eui.Component {
 	private dealTimeout = 0;
 	private playerPointLabel:eui.Label;
 	private bankerPointLabel:eui.Label;
+	private debounceTimeid =0;
+	private timer:egret.Timer;
+	private betTime =0;
 
 
 	public constructor() {
@@ -41,14 +46,33 @@ class BaijialePanel extends eui.Component {
 		});
 
 
-
+		
 		Net.SocketUtil.addHandler(EventData.Data.GAME_START, function (ret) {
 			console.log(EventData.Data.GAME_START, ret);
 			//this.setStatusText('开始游戏');
+			this.timer.stop();
+			this.timer.reset();
+			for(let key in this.bets){
+				this.bets[key] = {gold:0,count:0};
+				this.betsTotal[key] = {gold:0};
+			}
+
+
 
 		}.bind(self));
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_ENTER, function (ret) {
 			this.setStatusText('已开局请下注');
+			this.betTime = ret.bet_time;
+			if(!this.timer.hasEventListener(egret.TimerEvent.TIMER)){
+				this.timer.addEventListener(egret.TimerEvent.TIMER,function(){
+					this.betTime--;
+					this.timerLabel.text = this.betTime;
+					if(this.betTime == 1){
+						console.log('下注时间已过');
+					}
+				},this);
+			}
+			this.timer.start();
 			console.log(EventData.Data.GAME_BET_ENTER, ret);
 			this.betPos.forEach(function(val,index){
 				val.touchEnabled = true;
@@ -56,6 +80,9 @@ class BaijialePanel extends eui.Component {
 		}.bind(self));
 
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_LEAVA, function (ret) {
+			this.timer.stop();
+			this.timer.reset();
+
 			this.betPos.forEach(function(val,index){
 				val.touchEnabled = false;
 			});
@@ -65,19 +92,20 @@ class BaijialePanel extends eui.Component {
 
 		//其他玩家下注
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET, function (ret) {
+			console.log('下注---',ret);
 			if(ret.uid == Global.user.userid){
 				return;
 			}
 			this.otherBets[ret.uid] = ret;
 			let rectName = 'betPos_'+ret.pos;
-			let chipName = 'C'+ret.chipType;
+			let chipName = 'c'+ret.chipType;
 			let rect:eui.Rect = this.betPosGroup.getChildByName(rectName);
 			let chip:eui.Image = this.chipGroup.getChildByName(chipName);
-			let x = Math.round(rect.width * Math.random());
-			let y = Math.round(rect.height*Math.random());
+			let x = Math.round(rect.width * Math.random()-10);
+			let y = Math.round(rect.height*Math.random()-10);
 			console.log('uid:',ret.uid,'下注:',ret.coin);
 			for(let i=0;i<ret.num;i++){
-				this.addBetInReac(rect,chip,x,y);
+				this.addBetInRect(rect,chip,x,y);
 			}
 			
 
@@ -86,6 +114,8 @@ class BaijialePanel extends eui.Component {
 
 		Net.SocketUtil.addHandler(EventData.Data.GAME_END, function (ret) {
 			console.log(EventData.Data.GAME_END, ret);
+			this.betTime = ret.show_result_time;
+			this.timer.start();
 			this.result = ret;
 			this.deal(ret);
 		}.bind(self));
@@ -101,6 +131,8 @@ class BaijialePanel extends eui.Component {
 			//LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent('enter_game',ret));
 		}.bind(self));
 
+
+		this.timer = new egret.Timer(1000,0);
 		this.imgMask.visible = false;
 		this.getArrByGroup(this.cardGroupPlayer, this.playerCards);
 		this.getArrByGroup(this.cardGroupBanker, this.bankerCards);
@@ -122,6 +154,7 @@ class BaijialePanel extends eui.Component {
 				gold:0,
 				count:0
 			}
+			this.betsTotal[pos] = 0;
 		}.bind(this));
 		
 
@@ -231,6 +264,11 @@ class BaijialePanel extends eui.Component {
 		this.bankerPointLabel.text = this.result['value'].banker;
 		this.bankerPointLabel.visible = true;
 		this.playerPointLabel.visible = true;
+		for(let key in this.result['userGold']){
+			if(key = Global.user.userid){
+				this.userHeadPanel.gold = this.result['userGold'][key];
+			}
+		}
 		let str = '';
 		switch(this.result['result']['win']){
 			case EventData.GameResult.TIE:
@@ -244,7 +282,7 @@ class BaijialePanel extends eui.Component {
 				break;
 		}
 		if(this.result['result']['pair']!=EventData.GameResult.NO_PAIR){
-			str+=' \n ';
+			//str+=' \n ';
 		}
 		switch(this.result['result']['pair']){
 			case EventData.GameResult.BOTH:
@@ -337,42 +375,59 @@ class BaijialePanel extends eui.Component {
 		this.bets[pos]['gold'] += this.selectedChipVal;
 		this.bets[pos]['count'] ++;
 		let point:egret.Point = new egret.Point();
-		let offsetX = Math.round(Math.random()*10-5);
-		let offsetY = Math.round(Math.random()*10-5);
-		rect.globalToLocal(e.stageX,e.stageY);
-		console.log('---1',point.x,point.y);
-
-		let img = this.addBetInReac(rect,this.selectedChipImg,point.x,point.y);
+		let offsetX = Math.round(Math.random()*20-10);
+		let offsetY = Math.round(Math.random()*20-10);
+		rect.globalToLocal(e.stageX,e.stageY,point);
+		
+		let imgArr = [];
+		for(let i=0;i<this.bets[pos]['count'];i++){
+			let index = this.addBetInRect(rect,this.selectedChipImg,point.x+offsetX,point.y+offsetY);
+			imgArr.push(index);
+		}
 		//let de = this.debounce(this.sendBet,300);
 		//de(pos,this.[pos]['gold']);
 
 		
-		this.debounce(this.sendBet,500)(pos,this.bets[pos].gold,this.selectedChipVal,this.bets[pos].count,img,rect); 
+		this.debounce(this.sendBet,500)(pos,this.bets[pos].gold,this.selectedChipVal,this.bets[pos].count,imgArr,rect); 
 	}
 
-	private addBetInReac(rect:eui.Rect,chipImg:eui.Image,x,y){
+	private addBetInRect(rect:eui.Rect,chipImg:eui.Image,x,y){
 		let img:eui.Image = new eui.Image(chipImg.texture);
 		img.scaleX = img.scaleY = 0.5;
-		rect.addChild(img);
+		let index = rect.numChildren+1;
+		img.name = 'img'+index;
+		rect.addChildAt(img,index);
 		img.x = x;
 		img.y = y;
 		console.log('---2',x,y);
-		return img;
+		return img.name;
 	}
 
-	private sendBet(pos,coin,chipType,num,img,rect){
+	private sendBet(pos,coin,chipType,num,imgArr,rect){
 		this.bets[pos]['gold'] = 0;
-		this.bets[pos]['count'] =0;
+		this.bets[pos]['count'] = 0;
+
 		Net.SocketUtil.sendBet(pos,coin,chipType,num,function(ret){
 			console.log(ret);
 			if(ret!="OK"){
-				rect.removeChild(img);
+				console.log('imgArr',imgArr);
+				let num = rect.numChidren;
+				imgArr.forEach(function(val,index){
+					let img = rect.getChildByName(val);
+					if(img){
+						setTimeout(function(){
+						rect.removeChild(img);
+						console.log('remove',img.name);
+						}.bind(this),1000*index);
+					}
+				})
+				imgArr =[];
 				console.log(ret,'下注失败');
-				this.bets[pos]['gold'] = 0;
-				this.bets[pos]['count'] = 0;
 
 			}else{
 				this.userHeadPanel.gold -= coin;
+				this.betsTotal[pos]['gold']+=coin;
+				console.log('下注成功',pos,coin,chipType,num,this.betsTotal);
 			}
 		}.bind(this));
 	}
@@ -388,13 +443,13 @@ class BaijialePanel extends eui.Component {
 	}
 
 	private debounce(fun,wait){
-		var timeid = 0;
 		var context = this;
 		return function(pos,coin,chipType,num,img,rect){
 			
 			var args = arguments;
-			clearTimeout(timeid);
-			timeid = setTimeout(function(){
+			clearTimeout(context.debounceTimeid);
+			console.log(context.debounceTimeid);
+			context.debounceTimeid = setTimeout(function(){
 				fun.apply(context,args);
 			},wait);
 		}
