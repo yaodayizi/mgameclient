@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin class="Baijiale" width="640" height="1138" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" xmlns:ns1="*">
 	<e:Image source="bjl_table_jpg" x="0" y="0" width="640" height="1138" locked="true"/>
-	<e:Rect id="imgMask" width="597" height="236" x="20" y="288" anchorOffsetX="0" anchorOffsetY="0" fillAlpha="0.5"/>
+	<e:Label text="限额:" x="8" y="439" fontFamily="Microsoft YaHei"/>
+	<e:Label id="betLimitLabel" text="" x="86" y="441" fontFamily="Verdana"/>
+	<e:Rect id="imgMask" width="597" height="236" x="20" y="288" anchorOffsetX="0" anchorOffsetY="0" fillAlpha="0.5" visible="false" locked="true"/>
 	<e:Group id="chipGroup" x="139.5" y="1044" anchorOffsetX="0" width="318" anchorOffsetY="0" height="55">
 		<e:Image  name="c100" source="chip_b1_png" x="0" y="0" width="78" height="78" anchorOffsetX="39" anchorOffsetY="39"/>
 		<e:Image  name="c500" source="chip_b5_png" x="85" y="0" width="78" height="78" anchorOffsetX="39" anchorOffsetY="39"/>
@@ -31,7 +33,7 @@
 		<e:Rect name="statusMask" width="641" height="138" x="0" y="0" anchorOffsetX="0" anchorOffsetY="0" strokeAlpha="0.8" fillAlpha="0.54"/>
 		<e:Label id="statusLabel" name="statusLabel" text="aaa" x="144" y="29" anchorOffsetX="0" width="352" anchorOffsetY="0" height="68" size="47" fontFamily="Microsoft YaHei" textAlign="center"/>
 	</e:Group>
-	<ns1:UserHeadPanel id="userHeadPanel" width="200" height="95" x="440" y="1043" skinName="UserHeadSkin"/>
-	<e:Label id="timerLabel" text="" x="454" y="924" anchorOffsetX="0" width="186" anchorOffsetY="0" height="81"/>Group>
+	<ns1:UserHeadPanel id="userHeadPanel" width="200" height="95" x="0" y="0" skinName="UserHeadSkin"/>
+	<e:Label id="timerLabel" text="" x="258" y="207" anchorOffsetX="0" width="109" anchorOffsetY="0" height="81" verticalAlign="middle" textAlign="center" size="44" fontFamily="Verdana"/>Group>
 
 </e:Skin>

@@ -9,6 +9,8 @@ class BaijialePanel extends eui.Component {
 	private statusText: eui.Group;
 	private statusLabel:eui.Label;
 	private timerLabel:eui.Label;
+	private betLimitLabel:eui.Label;
+
 	private playerCards = [];
 	private bankerCards = [];
 	private result = {};
@@ -18,6 +20,7 @@ class BaijialePanel extends eui.Component {
 	private otherBets = {};
 	private bets = {};
 	private betsTotal = {};
+	private roomConfig;
 	private selectedChipImg:eui.Image;
 	private selectedChipVal = 0;
 	private suitMapping = { "spade": "A", "heart": "B", "club": "C", "diamond": "D" };
@@ -43,7 +46,7 @@ class BaijialePanel extends eui.Component {
 
 		Net.SocketUtil.addHandler(EventData.Data.PLAYER_ENTER, function (ret) {
 			console.log('player join game', ret);
-		});
+		}.bind(self));
 
 
 		
@@ -52,7 +55,7 @@ class BaijialePanel extends eui.Component {
 			//this.setStatusText('开始游戏');
 			this.timer.stop();
 			this.timer.reset();
-			for(let key in this.bets){
+			for(let key in this.betPos){
 				this.bets[key] = {gold:0,count:0};
 				this.betsTotal[key] = {gold:0};
 			}
@@ -92,7 +95,7 @@ class BaijialePanel extends eui.Component {
 
 		//其他玩家下注
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET, function (ret) {
-			console.log('下注---',ret);
+			console.log('gameBet',ret);
 			if(ret.uid == Global.user.userid){
 				return;
 			}
@@ -101,10 +104,11 @@ class BaijialePanel extends eui.Component {
 			let chipName = 'c'+ret.chipType;
 			let rect:eui.Rect = this.betPosGroup.getChildByName(rectName);
 			let chip:eui.Image = this.chipGroup.getChildByName(chipName);
-			let x = Math.round(rect.width * Math.random()-10);
-			let y = Math.round(rect.height*Math.random()-10);
 			console.log('uid:',ret.uid,'下注:',ret.coin);
 			for(let i=0;i<ret.num;i++){
+				let x = Math.round(rect.width * Math.random()-10);
+				let y = Math.round(rect.height*Math.random()-10);
+
 				this.addBetInRect(rect,chip,x,y);
 			}
 			
@@ -127,6 +131,8 @@ class BaijialePanel extends eui.Component {
 
 		Net.SocketUtil.enterGame(1000, Global.user.token, function (ret) {
 			console.log('enter_game', ret);
+			this.roomConfig = ret.data.roomConfig;
+			this.betLimitLabel.text = this.roomConfig.min_bet +' - '+this.roomConfig.max_bet;
 			this.hideEl();
 			//LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent('enter_game',ret));
 		}.bind(self));
@@ -157,7 +163,7 @@ class BaijialePanel extends eui.Component {
 			this.betsTotal[pos] = 0;
 		}.bind(this));
 		
-
+		
 		//this.betPosGroup
 
 
@@ -188,6 +194,9 @@ class BaijialePanel extends eui.Component {
 
 	}
 
+	/***
+	 * 发牌
+	 */
 	private deal(ret) {
 		this.playerCards.forEach(function(val,index){
 			val.visible = false;
@@ -244,8 +253,6 @@ class BaijialePanel extends eui.Component {
 		}
 		let attrVal = card.scaleX;
 
-		//let toObj = attr == 'width' ? {width:0} : {height:0};
-		//let toObj2 = attr == 'width' ? {width:attrVal} : {height:attrVal};
 		let params = { card: card, cardVal: retCardVal};
 		var tw = egret.Tween.get(card, {})
 			.to({ visible: true }, 100)
@@ -266,7 +273,7 @@ class BaijialePanel extends eui.Component {
 		this.playerPointLabel.visible = true;
 		for(let key in this.result['userGold']){
 			if(key = Global.user.userid){
-				this.userHeadPanel.gold = this.result['userGold'][key];
+				this.userHeadPanel.gold = this.result['betPaid'][key]['gold'];
 			}
 		}
 		let str = '';
@@ -300,9 +307,9 @@ class BaijialePanel extends eui.Component {
 		setTimeout(function(){
 			this.hideEl();
 			this.clearBet();
-		}.bind(this),15000);
+		}.bind(this),9000);
 		console.log(str);
-		this.setStatusText(str,15000);
+		this.setStatusText(str,9000);
 
 	}
 
@@ -372,8 +379,23 @@ class BaijialePanel extends eui.Component {
 		let rect:eui.Rect = <eui.Rect>e.target;
 		let pos = rect.name.replace('betPos_','');
 		//this.bets[pos][this.selectedChipVal]['count'] ++;
+		let totalGold = 0;
+		for(var key in this.betsTotal){
+			totalGold += this.betsTotal[key]['gold'];
+			totalGold += this.bets[key]['gold'];
+		}
+
+		if(totalGold + this.selectedChipVal > this.roomConfig.max_bet){
+			console.log('已超过下注额',totalGold,this.roomConfig.max_bet);
+			return false;		
+
+		}
+
+
 		this.bets[pos]['gold'] += this.selectedChipVal;
 		this.bets[pos]['count'] ++;
+
+
 		let point:egret.Point = new egret.Point();
 		let offsetX = Math.round(Math.random()*20-10);
 		let offsetY = Math.round(Math.random()*20-10);
@@ -408,7 +430,7 @@ class BaijialePanel extends eui.Component {
 		this.bets[pos]['count'] = 0;
 
 		Net.SocketUtil.sendBet(pos,coin,chipType,num,function(ret){
-			console.log(ret);
+			//console.log(ret);
 			if(ret!="OK"){
 				console.log('imgArr',imgArr);
 				let num = rect.numChidren;
@@ -416,6 +438,7 @@ class BaijialePanel extends eui.Component {
 					let img = rect.getChildByName(val);
 					if(img){
 						setTimeout(function(){
+						//todo:移除已下注未成功的筹码有问题 只能移除一个 
 						rect.removeChild(img);
 						console.log('remove',img.name);
 						}.bind(this),1000*index);
