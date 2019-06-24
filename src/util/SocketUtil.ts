@@ -2,6 +2,7 @@ module Net.SocketUtil {
         var  gateServer: Pomelo;
         var  pomelo: Pomelo;
         var  isConnect: boolean = false;
+		var  addEvents = [];
 		export function  connect(host,port){
 			if(!this.pomelo){
 				this.pomelo = new Pomelo();
@@ -66,9 +67,27 @@ module Net.SocketUtil {
 			});
 		}
 
+		export function getAllRoomData(recordNum,callback){
+			this.pomelo.request('bjl.gameHandler.getAllRoomData',{num:recordNum},function(ret){
+				callback(ret);
+			});
+
+		}
+
+
 		export function addHandler(event,callback){
 			this.pomelo.on(event,callback);
+			this.events.push(event);
 		}
+
+		export function removeHandler(event){
+			this.pomelo.off(event);
+			let n = this.addEvents.indexOf(event);
+			if(n>=0){
+				this.addEvents.splice(n,1);
+			}
+		}
+
 
 		
 

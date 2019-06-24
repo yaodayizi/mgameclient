@@ -70,8 +70,13 @@ class BaijialePanel extends eui.Component {
 				this.timer.addEventListener(egret.TimerEvent.TIMER,function(){
 					this.betTime--;
 					this.timerLabel.text = this.betTime;
+					//提前1秒结束下注,防止服务器结束下注之后客户端还传下注数据
 					if(this.betTime == 1){
 						console.log('下注时间已过');
+						this.betPos.forEach(function(val,index){
+							val.touchEnabled = false;
+						});
+
 					}
 				},this);
 			}
@@ -86,9 +91,6 @@ class BaijialePanel extends eui.Component {
 			this.timer.stop();
 			this.timer.reset();
 
-			this.betPos.forEach(function(val,index){
-				val.touchEnabled = false;
-			});
 			console.log(EventData.Data.GAME_BET_LEAVA, ret);
 			this.setStatusText('下注结束');
 		}.bind(self));
@@ -271,7 +273,7 @@ class BaijialePanel extends eui.Component {
 		this.bankerPointLabel.text = this.result['value'].banker;
 		this.bankerPointLabel.visible = true;
 		this.playerPointLabel.visible = true;
-		for(let key in this.result['userGold']){
+		for(let key in this.result['betPaid']){
 			if(key = Global.user.userid){
 				this.userHeadPanel.gold = this.result['betPaid'][key]['gold'];
 			}
@@ -289,7 +291,7 @@ class BaijialePanel extends eui.Component {
 				break;
 		}
 		if(this.result['result']['pair']!=EventData.GameResult.NO_PAIR){
-			//str+=' \n ';
+			str+='  ';
 		}
 		switch(this.result['result']['pair']){
 			case EventData.GameResult.BOTH:
@@ -478,5 +480,13 @@ class BaijialePanel extends eui.Component {
 		}
 	}
 
+	public dipose(){
+		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_ENTER);
 
+		if(this.parent){
+			this.parent.removeChild(this);
+		}
+
+		
+	}
 }

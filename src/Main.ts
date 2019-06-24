@@ -72,79 +72,7 @@ class Main extends egret.DisplayObjectContainer {
     private async runGame() {
         await this.loadResource()
         this.createGameScene();
-/*        const result = await RES.getResAsync("description_json")
-        this.startAnimation(result);
-        await platform.login();
-        const userInfo = await platform.getUserInfo();
-        console.log(userInfo);*/
     }
- /*       var route = 'gate.gateHandler.queryEntry';
-        this.pomelo = new Pomelo();
-        var self = this;
-        this.pomelo.init({
-            host:'127.0.0.1',
-            port:9115,
-            log:true
-        },function(res){
-            console.log('001',res);
-           
-            self.pomelo.request(route,112233,function(res){
-                 self.pomelo.disconnect();
-                 console.log('res',res);
-
-                 if(res.code == 500){
-                     return;
-                 }
-                 self.pomelo.init({
-                     host:res.host,
-                     port:res.port,
-                     log:true
-                 },function(ret){
-                     //console.log('ret',ret);
-                     let route = "";
-                     self.pomelo.request("connector.entryHandler.login",{username:'test1',password:'123456'},function(res){
-                         console.log('login：',res);
-                         self.token = res.token;
-                         self.enterGame(res);
-                        self.pomelo.on('playerEnter',function(res){
-                            console.log('playerEnter',res);
-                        });
-                        self.pomelo.on('playerLeave',function(res){
-                            console.log('playerLeave',res);
-                        });
-                        self.pomelo.on('gameStart',function(res){
-                            console.log('gameStart',res);
-                        }); 
-                        self.pomelo.on('gameBetEnter',function(res){
-                            console.log('gameBetEnter',res);
-                        });
-                        self.pomelo.on('gameBetEnter',function(res){
-                            console.log('gameBetLeave',res);
-                        });
-                        self.pomelo.on('gameBetLeave',function(res){
-                            console.log('gameBetLeave',res);
-                        });
-                        self.pomelo.on('gameEnd',function(res){
-                            console.log('gameEnd',res);
-                        });
-
-                     });
-                     //pomelo.request()
-                 })
-            });
-        });
-    }
-
-    private  enterGame(data){
-        this.pomelo.request("connector.entryHandler.enterGame",{
-            gameType:1000,
-            token:data.data.user.token
-        },function(res){
-            console.log('enterGame res:',res);
-
-
-        }.bind(this))
-    }*/
 
     private async loadResource() {
         try {
