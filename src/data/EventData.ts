@@ -11,7 +11,8 @@ module EventData{
                 GAME_CHECK:"gameCheck",
                 GAME_CALC:"gameCalc",
                 GAME_END:"gameEnd",
-                SHOW_RESULT:"showResult"         
+                SHOW_RESULT:"showResult",
+                JOIN_ROOM:"joinRoom"        
 
     }
 

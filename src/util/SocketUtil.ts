@@ -1,8 +1,7 @@
 module Net.SocketUtil {
-        var  gateServer: Pomelo;
-        var  pomelo: Pomelo;
+/*        var  pomelo: Pomelo;
         var  isConnect: boolean = false;
-		var  addEvents = [];
+		var  addEvents = [];*/
 		export function  connect(host,port){
 			if(!this.pomelo){
 				this.pomelo = new Pomelo();
@@ -62,30 +61,36 @@ module Net.SocketUtil {
 
 		export function sendBet(pos,coin,chipType,num,callback){
 			
-			this.pomelo.request('bjl.gameHandler.bet',{pos:pos,coin:coin,chipType,num},function(ret){
-				callback(ret);
+			this.pomelo.request('bjl.gameHandler.bet',{pos:pos,coin:coin,chipType,num},function(err,ret){
+				callback(err,ret);
 			});
 		}
 
 		export function getAllRoomData(recordNum,callback){
-			this.pomelo.request('bjl.gameHandler.getAllRoomData',{num:recordNum},function(ret){
-				callback(ret);
+			this.pomelo.request('bjl.gameHandler.getAllRoomData',{num:recordNum},function(err,ret){
+				callback(err,ret);
 			});
 
+		}
+
+		export function joinRoom(roomid,callback){
+			this.pomelo.request('bjl.gameHandler.joinRoom',{roomid:roomid},function(err,ret){
+				callback(err,ret);
+			});
 		}
 
 
 		export function addHandler(event,callback){
 			this.pomelo.on(event,callback);
-			this.events.push(event);
+			//this.addEvents.push(event);
 		}
 
 		export function removeHandler(event){
 			this.pomelo.off(event);
-			let n = this.addEvents.indexOf(event);
+/*			let n = this.addEvents.indexOf(event);
 			if(n>=0){
 				this.addEvents.splice(n,1);
-			}
+			}*/
 		}
 
 

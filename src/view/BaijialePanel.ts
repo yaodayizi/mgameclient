@@ -32,11 +32,19 @@ class BaijialePanel extends eui.Component {
 	private debounceTimeid =0;
 	private timer:egret.Timer;
 	private betTime =0;
+	private roomName:eui.Label;
+	private roomid;
+	private roadData;
 
-
-	public constructor() {
+	public constructor(roomid,rName,roomConfig,roadData) {
 		super();
 		this.skinName = "resource/skins/Baijiale.exml";
+		this.roomid = roomid;
+		this.roomConfig = roomConfig;
+		this.roadData = roadData;
+		this.roomName.text = rName;
+		this.betLimitLabel.text = this.roomConfig.min_bet +' - '+this.roomConfig.max_bet;
+
 		this.runGame();
 	}
 
@@ -70,8 +78,8 @@ class BaijialePanel extends eui.Component {
 				this.timer.addEventListener(egret.TimerEvent.TIMER,function(){
 					this.betTime--;
 					this.timerLabel.text = this.betTime;
-					//提前1秒结束下注,防止服务器结束下注之后客户端还传下注数据
-					if(this.betTime == 1){
+					//提前2秒结束下注,防止服务器结束下注之后客户端还传下注数据
+					if(this.betTime == 2){
 						console.log('下注时间已过');
 						this.betPos.forEach(function(val,index){
 							val.touchEnabled = false;
@@ -131,13 +139,15 @@ class BaijialePanel extends eui.Component {
 		
 		}.bind(self));
 
-		Net.SocketUtil.enterGame(1000, Global.user.token, function (ret) {
+/*		Net.SocketUtil.enterGame(1000, Global.user.token, function (ret) {
 			console.log('enter_game', ret);
 			this.roomConfig = ret.data.roomConfig;
 			this.betLimitLabel.text = this.roomConfig.min_bet +' - '+this.roomConfig.max_bet;
 			this.hideEl();
 			//LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent('enter_game',ret));
-		}.bind(self));
+		}.bind(self));*/
+
+
 
 
 		this.timer = new egret.Timer(1000,0);
@@ -423,7 +433,7 @@ class BaijialePanel extends eui.Component {
 		rect.addChildAt(img,index);
 		img.x = x;
 		img.y = y;
-		console.log('---2',x,y);
+		//console.log('---2',x,y);
 		return img.name;
 	}
 
@@ -445,7 +455,7 @@ class BaijialePanel extends eui.Component {
 						console.log('remove',img.name);
 						}.bind(this),1000*index);
 					}
-				})
+				});
 				imgArr =[];
 				console.log(ret,'下注失败');
 
@@ -482,11 +492,19 @@ class BaijialePanel extends eui.Component {
 
 	public dipose(){
 		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_ENTER);
-
+		Net.SocketUtil.removeHandler(EventData.Data.GAME_START);
+		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET_ENTER);
+		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET_LEAVA);
+		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET);
+		Net.SocketUtil.removeHandler(EventData.Data.GAME_END);
+		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEVA);
+		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEVA);
+		LCP.LListener.getInstance().removeEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
+		this.timer.stop();
 		if(this.parent){
 			this.parent.removeChild(this);
 		}
-
+		
 		
 	}
 }

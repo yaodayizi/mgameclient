@@ -34,7 +34,10 @@ class LoginPanel extends eui.Component {
 	}
 
 	public dispose(){
-
+		this.loginBtn.removeEventListener(egret.TouchEvent.TOUCH_TAP,this.loginBtnClick,this);
+		if(this.parent){
+			this.parent.removeChild(this);
+		}
 	}
 
 }
