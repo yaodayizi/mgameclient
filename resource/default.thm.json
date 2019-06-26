@@ -9,6 +9,7 @@
 		"resource/skins/Baijiale.exml",
 		"resource/skins/ButtonSkin.exml",
 		"resource/skins/LoginSkin.exml",
+		"resource/skins/NetError.exml",
 		"resource/skins/RoomItemBjl.exml",
 		"resource/skins/RoomListBjl.exml"
 	],

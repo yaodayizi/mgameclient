@@ -7,23 +7,23 @@ module Net.SocketUtil {
 				this.pomelo = new Pomelo();
 			}
 			this.pomelo.on('io-error',function(e){
-				console.log('io-error',e);
+				console.log('1io-error',e);
 			});
 			this.pomelo.on('error',function(e){
-				console.log('error',e);
+				console.log('1error',e);
 			});
 			this.pomelo.on('connect',function(res){
-				console.log('connect');
+				console.log('1connect');
 				this.isConnect = true;
 			})
 			this.pomelo.on('disconnect',function(res){
-				console.log('disconnect');	
+				console.log('1disconnect');	
 			});
 			this.pomelo.on('close',function(res){
-				console.log('close');	
+				console.log('1close');	
 			});
 			this.pomelo.on('heartbeat timeout',function(res){
-				console.log('heartbeat timeout');	
+				console.log('1heartbeat timeout');	
 			});
 
 
@@ -34,7 +34,12 @@ module Net.SocketUtil {
 						console.log(res.msg);
 						return;
 					}
-					this.connectGameServer({host:res.host,port:res.port,log:true});
+					let config = {
+						host:res.host,
+						port:res.port,
+						log:true
+					}
+					this.connectGameServer(config);
 				}.bind(this));
 			}.bind(this));
 		}	
@@ -61,21 +66,27 @@ module Net.SocketUtil {
 
 		export function sendBet(pos,coin,chipType,num,callback){
 			
-			this.pomelo.request('bjl.gameHandler.bet',{pos:pos,coin:coin,chipType,num},function(err,ret){
-				callback(err,ret);
+			this.pomelo.request('bjl.gameHandler.bet',{pos:pos,coin:coin,chipType,num},function(ret){
+				callback(ret);
 			});
 		}
 
 		export function getAllRoomData(recordNum,callback){
-			this.pomelo.request('bjl.gameHandler.getAllRoomData',{num:recordNum},function(err,ret){
-				callback(err,ret);
+			this.pomelo.request('bjl.gameHandler.getAllRoomData',{num:recordNum},function(ret){
+				callback(ret);
 			});
-
 		}
 
-		export function joinRoom(roomid,callback){
-			this.pomelo.request('bjl.gameHandler.joinRoom',{roomid:roomid},function(err,ret){
-				callback(err,ret);
+		export function joinRoom(data,callback){
+			this.pomelo.request('bjl.gameHandler.joinRoom',data,function(ret){
+				callback(ret);
+			});
+		}
+
+		//退出游戏
+		export function leaveRoom(data,callback){
+			this.pomelo.request('bjl.gameHandler.leaveRoom',data,function(ret){
+				callback(ret);
 			});
 		}
 
@@ -92,6 +103,10 @@ module Net.SocketUtil {
 				this.addEvents.splice(n,1);
 			}*/
 		}
+
+/*		function disconnect(){
+			LCP.LListener.getInstance().addEventListener(new LCP.LEvent(""))
+		}*/
 
 
 		

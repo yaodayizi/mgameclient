@@ -4,6 +4,7 @@
 	<e:Label text="限额:" x="326.5" y="440" fontFamily="Microsoft YaHei"/>
 	<e:Label id="roomName" text="" x="26.5" y="440" fontFamily="Microsoft YaHei"/>
 	<e:Label id="betLimitLabel" text="" x="416" y="441" fontFamily="Verdana"/>
+	<e:Image id="btn_exit" source="exit_n_png" x="-6" y="107"/>
 	<e:Rect id="imgMask" width="597" height="236" x="20" y="288" anchorOffsetX="0" anchorOffsetY="0" fillAlpha="0.5" visible="false" locked="true"/>
 	<e:Group id="chipGroup" x="139.5" y="1044" anchorOffsetX="0" width="318" anchorOffsetY="0" height="55">
 		<e:Image  name="c100" source="chip_b1_png" x="0" y="0" width="78" height="78" anchorOffsetX="39" anchorOffsetY="39"/>

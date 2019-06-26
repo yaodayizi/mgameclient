@@ -32,6 +32,7 @@ class Main extends egret.DisplayObjectContainer {
     private pomelo:Pomelo;
     private token:string;
     private roomListBjlPanel:RoomListBjlPanel;
+    private baijialePanel:BaijialePanel
     public constructor() {
         super();
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
@@ -133,10 +134,20 @@ class Main extends egret.DisplayObjectContainer {
             Global.user = ret.data.user;
             this.roomListBjlPanel.dispose();
             this.roomListBjlPanel = null;
-            let baijialePanel:BaijialePanel = new BaijialePanel(ret.data.roomid,ret.data.roomName,ret.data.roomConfig,ret.data.roadData);
-            this.addChild(baijialePanel);
+            this.roomListBjlPanel = null;
+            this.baijialePanel = new BaijialePanel(ret.data.roomid,ret.data.roomName,ret.data.roomConfig,ret.data.roadData);
+            this.addChild(this.baijialePanel);
         },this);
         this.addChild(loginPanel);
+
+        LCP.LListener.getInstance().addEventListener(EventData.Data.PLAYER_LEAVE,function(){
+            
+            this.baijialePanel.dispose();
+            this.baijialePanel = null;
+            this.roomListBjlPanel = new RoomListBjlPanel();
+            this.roomListBjlPanel.updateList();
+            this.addChild(this.roomListBjlPanel);
+        },this);
 
 /*        let sky = this.createBitmapByName("bg_jpg");
         this.addChild(sky);

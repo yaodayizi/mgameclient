@@ -10,7 +10,7 @@ class BaijialePanel extends eui.Component {
 	private statusLabel:eui.Label;
 	private timerLabel:eui.Label;
 	private betLimitLabel:eui.Label;
-
+	private btn_exit:eui.Image;
 	private playerCards = [];
 	private bankerCards = [];
 	private result = {};
@@ -95,11 +95,11 @@ class BaijialePanel extends eui.Component {
 			});
 		}.bind(self));
 
-		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_LEAVA, function (ret) {
+		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_LEAVE, function (ret) {
 			this.timer.stop();
 			this.timer.reset();
 
-			console.log(EventData.Data.GAME_BET_LEAVA, ret);
+			console.log(EventData.Data.GAME_BET_LEAVE, ret);
 			this.setStatusText('下注结束');
 		}.bind(self));
 
@@ -134,10 +134,6 @@ class BaijialePanel extends eui.Component {
 			this.deal(ret);
 		}.bind(self));
 
-		Net.SocketUtil.addHandler(EventData.Data.PLAYER_LEVA, function (ret) {
-			console.log(EventData.Data.PLAYER_LEVA, ret);
-		
-		}.bind(self));
 
 /*		Net.SocketUtil.enterGame(1000, Global.user.token, function (ret) {
 			console.log('enter_game', ret);
@@ -175,6 +171,7 @@ class BaijialePanel extends eui.Component {
 			this.betsTotal[pos] = 0;
 		}.bind(this));
 		
+		this.btn_exit.addEventListener(egret.TouchEvent.TOUCH_TAP,this.exitClick,this);
 		
 		//this.betPosGroup
 
@@ -490,15 +487,24 @@ class BaijialePanel extends eui.Component {
 		}
 	}
 
-	public dipose(){
+	private exitClick(e){
+		Net.SocketUtil.leaveRoom({},function(ret){
+			if(ret == Global.user.userid){
+				LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.PLAYER_LEAVE,null));
+			}
+			console.log('exit game',ret);
+		});
+	}
+
+	public dispose(){
 		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_ENTER);
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_START);
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET_ENTER);
-		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET_LEAVA);
+		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET_LEAVE);
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET);
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_END);
-		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEVA);
-		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEVA);
+		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEAVE);
+		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEAVE);
 		LCP.LListener.getInstance().removeEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
 		this.timer.stop();
 		if(this.parent){
