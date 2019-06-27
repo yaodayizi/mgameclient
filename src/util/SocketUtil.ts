@@ -2,9 +2,10 @@ module Net.SocketUtil {
 /*        var  pomelo: Pomelo;
         var  isConnect: boolean = false;
 		var  addEvents = [];*/
-		export function  connect(host,port){
+		export function  connect(host,port,callback=null){
 			if(!this.pomelo){
 				this.pomelo = new Pomelo();
+
 			}
 			this.pomelo.on('io-error',function(e){
 				console.log('1io-error',e);
@@ -39,7 +40,7 @@ module Net.SocketUtil {
 						port:res.port,
 						log:true
 					}
-					this.connectGameServer(config);
+					this.connectGameServer(config,callback);
 				}.bind(this));
 			}.bind(this));
 		}	
@@ -51,6 +52,9 @@ module Net.SocketUtil {
 
 			this.pomelo.init(config,function(res0){
 				console.log('init',res0);
+				if(callback){
+					callback();
+				}
 			}.bind(this));
 		}
 
@@ -60,8 +64,8 @@ module Net.SocketUtil {
 			}.bind(this));
 		}
 
-		export function enterGame(gameType,token,callback){
-			this.pomelo.request('connector.entryHandler.enterGame',{gameType:gameType,token:token},callback);
+		export function enterGame(gameType,token,roomid,callback){
+			this.pomelo.request('connector.entryHandler.enterGame',{gameType:gameType,token:token,roomid:roomid},callback);
 		}
 
 		export function sendBet(pos,coin,chipType,num,callback){
@@ -77,8 +81,8 @@ module Net.SocketUtil {
 			});
 		}
 
-		export function joinRoom(data,callback){
-			this.pomelo.request('bjl.gameHandler.joinRoom',data,function(ret){
+		export function joinRoom(roomid,callback){
+			this.pomelo.request('bjl.gameHandler.joinRoom',{roomid:roomid},function(ret){
 				callback(ret);
 			});
 		}

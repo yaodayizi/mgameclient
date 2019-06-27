@@ -76,7 +76,9 @@ class BaijialePanel extends eui.Component {
 			this.betTime = ret.bet_time;
 			if(!this.timer.hasEventListener(egret.TimerEvent.TIMER)){
 				this.timer.addEventListener(egret.TimerEvent.TIMER,function(){
-					this.betTime--;
+					if(this.betTime>1){
+						this.betTime--;
+					}
 					this.timerLabel.text = this.betTime;
 					//提前2秒结束下注,防止服务器结束下注之后客户端还传下注数据
 					if(this.betTime == 2){
@@ -84,7 +86,6 @@ class BaijialePanel extends eui.Component {
 						this.betPos.forEach(function(val,index){
 							val.touchEnabled = false;
 						});
-
 					}
 				},this);
 			}
@@ -276,6 +277,9 @@ class BaijialePanel extends eui.Component {
 
 	private showResult()
 	{
+		if(!this.result){
+			return false;
+		}
 		this.playerPointLabel.text = this.result['value'].player;
 		this.bankerPointLabel.text = this.result['value'].banker;
 		this.bankerPointLabel.visible = true;
@@ -489,11 +493,13 @@ class BaijialePanel extends eui.Component {
 
 	private exitClick(e){
 		Net.SocketUtil.leaveRoom({},function(ret){
-			if(ret == Global.user.userid){
+			if(parseInt(ret) === parseInt(Global.user.userid)){
 				LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.PLAYER_LEAVE,null));
+			}else{
+				TipsUtil.alert('您已下注游戏未结束，不能离开',null,this);
 			}
 			console.log('exit game',ret);
-		});
+		}.bind(this));
 	}
 
 	public dispose(){
@@ -507,6 +513,7 @@ class BaijialePanel extends eui.Component {
 		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEAVE);
 		LCP.LListener.getInstance().removeEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
 		this.timer.stop();
+		this.timer =null;
 		if(this.parent){
 			this.parent.removeChild(this);
 		}

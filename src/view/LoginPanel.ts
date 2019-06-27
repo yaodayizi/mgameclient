@@ -8,8 +8,13 @@ class LoginPanel extends eui.Component {
 		super();
 		this.skinName = "resource/skins/LoginSkin.exml";
 		Net.SocketUtil.connect('127.0.0.1',9115);
+
+		
+
 		this.loginBtn.addEventListener(egret.TouchEvent.TOUCH_TAP,this.loginBtnClick,this);
 	}
+
+
 
 	private loginBtnClick(e){
         if (this.password.text == "" || this.password.text.length > 20 || this.password.text.length < 2) {

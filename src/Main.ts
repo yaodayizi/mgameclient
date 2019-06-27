@@ -32,7 +32,8 @@ class Main extends egret.DisplayObjectContainer {
     private pomelo:Pomelo;
     private token:string;
     private roomListBjlPanel:RoomListBjlPanel;
-    private baijialePanel:BaijialePanel
+    private baijialePanel:BaijialePanel;
+    private loginPanel:LoginPanel;
     public constructor() {
         super();
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.onAddToStage, this);
@@ -111,7 +112,9 @@ class Main extends egret.DisplayObjectContainer {
      * Create a game scene
      */
     private createGameScene() {
-        let loginPanel:LoginPanel = new LoginPanel();
+
+
+
         LCP.LListener.getInstance().addEventListener(EventData.Data.LOGIN_SUCCESS,function(event){
             let ret = event.param;
             if(ret.code!=200){
@@ -120,8 +123,9 @@ class Main extends egret.DisplayObjectContainer {
                 return;
             }
             Global.user = ret.data.user;
+            egret.localStorage.setItem('user',JSON.stringify(Global.user));
             //this.removeChild(loginPanel);
-            loginPanel.dispose();
+            this.loginPanel.dispose();
             //let baijialePanel:BaijialePanel = new BaijialePanel();
             this.roomListBjlPanel = new RoomListBjlPanel();
             this.addChild(this.roomListBjlPanel);
@@ -131,14 +135,19 @@ class Main extends egret.DisplayObjectContainer {
 
         LCP.LListener.getInstance().addEventListener(EventData.Data.JOIN_ROOM,function(event){
             let ret = event.param;
-            Global.user = ret.data.user;
-            this.roomListBjlPanel.dispose();
-            this.roomListBjlPanel = null;
-            this.roomListBjlPanel = null;
+            Global.user.gold = ret.data.user.gold;
+            Global.user.serverid = ret.data.user.serverid;
+            Global.user.roomid = ret.data.user.roomid;
+
+            egret.localStorage.setItem('user',JSON.stringify(Global.user));
+            if(this.roomListBjlPanel){
+                this.roomListBjlPanel.dispose();
+                this.roomListBjlPanel = null;
+            }
             this.baijialePanel = new BaijialePanel(ret.data.roomid,ret.data.roomName,ret.data.roomConfig,ret.data.roadData);
             this.addChild(this.baijialePanel);
         },this);
-        this.addChild(loginPanel);
+        
 
         LCP.LListener.getInstance().addEventListener(EventData.Data.PLAYER_LEAVE,function(){
             
@@ -149,6 +158,35 @@ class Main extends egret.DisplayObjectContainer {
             this.addChild(this.roomListBjlPanel);
         },this);
 
+        let userStr = egret.localStorage.getItem('user');
+        if(userStr && userStr!='undefined'){
+            let user = JSON.parse(userStr);
+            Global.user = user;
+            let token = user['token'];
+            let roomid = user['roomid'] ? user['roomid'] : 0;
+            var callback = function(){
+                Net.SocketUtil.enterGame(1000,token,roomid,function(ret){
+                    if(ret.code ==200 ){
+                        if(roomid>0){
+                            Net.SocketUtil.joinRoom(roomid,function(ret){
+                                if(ret.code ==200){
+                                    LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.JOIN_ROOM,{roomid:roomid,data:ret.data}));
+                                }
+                                console.log('EventData.Data.JOIN_ROOM',ret);
+
+                            });
+                        }
+                    }
+                });
+            }.bind(this);
+            if(token){
+                Net.SocketUtil.connect('127.0.0.1',9115,callback);
+            }
+        }else{
+                this.loginPanel = new LoginPanel();
+
+                this.addChild(this.loginPanel);
+         }
 /*        let sky = this.createBitmapByName("bg_jpg");
         this.addChild(sky);
         let stageW = this.stage.stageWidth;
