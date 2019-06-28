@@ -21,10 +21,14 @@ module Net.SocketUtil {
 				console.log('1disconnect');	
 			});
 			this.pomelo.on('close',function(res){
-				console.log('1close');	
+				console.log('已掉线',res);
 			});
 			this.pomelo.on('heartbeat timeout',function(res){
 				console.log('1heartbeat timeout');	
+			});
+
+			this.pomelo.on('playerLeave',function(res){
+				console.log('用户离开',res);
 			});
 
 
@@ -106,6 +110,11 @@ module Net.SocketUtil {
 			if(n>=0){
 				this.addEvents.splice(n,1);
 			}*/
+		}
+
+		export function dispatch(eventName,data){
+			this.pomelo.emit(eventName,data);
+			console.log('emit',eventName,data);
 		}
 
 /*		function disconnect(){

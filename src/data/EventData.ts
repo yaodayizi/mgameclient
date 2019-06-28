@@ -13,6 +13,7 @@ module EventData{
                 GAME_END:"gameEnd",
                 SHOW_RESULT:"showResult",
                 JOIN_ROOM:"joinRoom",
+                EXIT_ROOM:"exitRoom"
                 
                 //disconnect:"disconnect"        
 

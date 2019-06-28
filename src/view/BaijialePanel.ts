@@ -35,8 +35,9 @@ class BaijialePanel extends eui.Component {
 	private roomName:eui.Label;
 	private roomid;
 	private roadData;
+	private firstGameState;
 
-	public constructor(roomid,rName,roomConfig,roadData) {
+	public constructor(roomid,rName,roomConfig,roadData,gameState) {
 		super();
 		this.skinName = "resource/skins/Baijiale.exml";
 		this.roomid = roomid;
@@ -44,7 +45,7 @@ class BaijialePanel extends eui.Component {
 		this.roadData = roadData;
 		this.roomName.text = rName;
 		this.betLimitLabel.text = this.roomConfig.min_bet +' - '+this.roomConfig.max_bet;
-
+		this.firstGameState = gameState;
 		this.runGame();
 	}
 
@@ -68,27 +69,10 @@ class BaijialePanel extends eui.Component {
 				this.betsTotal[key] = {gold:0};
 			}
 
-
-
 		}.bind(self));
 		Net.SocketUtil.addHandler(EventData.Data.GAME_BET_ENTER, function (ret) {
 			this.setStatusText('已开局请下注');
-			this.betTime = ret.bet_time;
-			if(!this.timer.hasEventListener(egret.TimerEvent.TIMER)){
-				this.timer.addEventListener(egret.TimerEvent.TIMER,function(){
-					if(this.betTime>1){
-						this.betTime--;
-					}
-					this.timerLabel.text = this.betTime;
-					//提前2秒结束下注,防止服务器结束下注之后客户端还传下注数据
-					if(this.betTime == 2){
-						console.log('下注时间已过');
-						this.betPos.forEach(function(val,index){
-							val.touchEnabled = false;
-						});
-					}
-				},this);
-			}
+			this.betTime = ret.time;
 			this.timer.start();
 			console.log(EventData.Data.GAME_BET_ENTER, ret);
 			this.betPos.forEach(function(val,index){
@@ -129,25 +113,32 @@ class BaijialePanel extends eui.Component {
 
 		Net.SocketUtil.addHandler(EventData.Data.GAME_END, function (ret) {
 			console.log(EventData.Data.GAME_END, ret);
-			this.betTime = ret.show_result_time;
+			this.betTime = ret.time;
+			this.timer.stop();
 			this.timer.start();
 			this.result = ret;
 			this.deal(ret);
 		}.bind(self));
 
 
-/*		Net.SocketUtil.enterGame(1000, Global.user.token, function (ret) {
-			console.log('enter_game', ret);
-			this.roomConfig = ret.data.roomConfig;
-			this.betLimitLabel.text = this.roomConfig.min_bet +' - '+this.roomConfig.max_bet;
-			this.hideEl();
-			//LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent('enter_game',ret));
-		}.bind(self));*/
-
-
 
 
 		this.timer = new egret.Timer(1000,0);
+		if(!this.timer.hasEventListener(egret.TimerEvent.TIMER)){
+			this.timer.addEventListener(egret.TimerEvent.TIMER,function(){
+				if(this.betTime>0){
+					this.betTime--;
+				}
+				this.timerLabel.text = this.betTime.toString();
+				//提前2秒结束下注,防止服务器结束下注之后客户端还传下注数据
+				if(this.betTime == 2){
+					console.log('下注时间已过');
+					this.betPos.forEach(function(val,index){
+						val.touchEnabled = false;
+					});
+				}
+			},this);
+		}
 		this.imgMask.visible = false;
 		this.getArrByGroup(this.cardGroupPlayer, this.playerCards);
 		this.getArrByGroup(this.cardGroupBanker, this.bankerCards);
@@ -174,13 +165,22 @@ class BaijialePanel extends eui.Component {
 		
 		this.btn_exit.addEventListener(egret.TouchEvent.TOUCH_TAP,this.exitClick,this);
 		
-		//this.betPosGroup
 
 
 		LCP.LListener.getInstance().addEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
 
 		this.userHeadPanel.gold = Global.user.gold;
 		this.userHeadPanel.userName = Global.user.user_name;
+
+		if(this.firstGameState.time>6){
+			let data = {};
+			if(this.firstGameState.state == EventData.Data.GAME_END){
+				data = this.firstGameState.gameEndData;
+			}
+			data['time'] = this.firstGameState.time;
+			Net.SocketUtil.dispatch(this.firstGameState.state,data);
+			//console.log('=========',this.firstGameState.state,data);
+		}
 
 /*		let ret = {
 			 "result": { "pair": "none", "win": "banker", "natural": "none" }, 
@@ -240,7 +240,7 @@ class BaijialePanel extends eui.Component {
 				j++;
 				m = i;
 			}
-			console.log(data);
+			//console.log(data);
 			if (ret.cards[pos].length - 1 >= m) {
 				setTimeout(dealCard.bind(this, i, j, pos), 1000);
 			}
@@ -285,7 +285,7 @@ class BaijialePanel extends eui.Component {
 		this.bankerPointLabel.visible = true;
 		this.playerPointLabel.visible = true;
 		for(let key in this.result['betPaid']){
-			if(key = Global.user.userid){
+			if(key == Global.user.userid){
 				this.userHeadPanel.gold = this.result['betPaid'][key]['gold'];
 			}
 		}
@@ -320,9 +320,9 @@ class BaijialePanel extends eui.Component {
 		setTimeout(function(){
 			this.hideEl();
 			this.clearBet();
-		}.bind(this),9000);
+		}.bind(this),(this.betTime-1)*1000);
 		console.log(str);
-		this.setStatusText(str,9000);
+		this.setStatusText(str,(this.betTime-1)*1000);
 
 	}
 
@@ -401,7 +401,6 @@ class BaijialePanel extends eui.Component {
 		if(totalGold + this.selectedChipVal > this.roomConfig.max_bet){
 			console.log('已超过下注额',totalGold,this.roomConfig.max_bet);
 			return false;		
-
 		}
 
 
@@ -423,7 +422,7 @@ class BaijialePanel extends eui.Component {
 		//de(pos,this.[pos]['gold']);
 
 		
-		this.debounce(this.sendBet,500)(pos,this.bets[pos].gold,this.selectedChipVal,this.bets[pos].count,imgArr,rect); 
+		this.debounce(this.sendBet,200)(pos,this.bets[pos].gold,this.selectedChipVal,this.bets[pos].count,imgArr,rect); 
 	}
 
 	private addBetInRect(rect:eui.Rect,chipImg:eui.Image,x,y){
@@ -494,7 +493,7 @@ class BaijialePanel extends eui.Component {
 	private exitClick(e){
 		Net.SocketUtil.leaveRoom({},function(ret){
 			if(parseInt(ret) === parseInt(Global.user.userid)){
-				LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.PLAYER_LEAVE,null));
+				LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.EXIT_ROOM,null));
 			}else{
 				TipsUtil.alert('您已下注游戏未结束，不能离开',null,this);
 			}
@@ -509,7 +508,6 @@ class BaijialePanel extends eui.Component {
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET_LEAVE);
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_BET);
 		Net.SocketUtil.removeHandler(EventData.Data.GAME_END);
-		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEAVE);
 		Net.SocketUtil.removeHandler(EventData.Data.PLAYER_LEAVE);
 		LCP.LListener.getInstance().removeEventListener(EventData.Data.SHOW_RESULT,this.showResult,this);
 		this.timer.stop();

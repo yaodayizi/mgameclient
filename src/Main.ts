@@ -144,12 +144,12 @@ class Main extends egret.DisplayObjectContainer {
                 this.roomListBjlPanel.dispose();
                 this.roomListBjlPanel = null;
             }
-            this.baijialePanel = new BaijialePanel(ret.data.roomid,ret.data.roomName,ret.data.roomConfig,ret.data.roadData);
+            this.baijialePanel = new BaijialePanel(ret.data.roomid,ret.data.roomName,ret.data.roomConfig,ret.data.roadData,ret.data.gameState);
             this.addChild(this.baijialePanel);
         },this);
         
 
-        LCP.LListener.getInstance().addEventListener(EventData.Data.PLAYER_LEAVE,function(){
+        LCP.LListener.getInstance().addEventListener(EventData.Data.EXIT_ROOM,function(){
             
             this.baijialePanel.dispose();
             this.baijialePanel = null;
@@ -159,15 +159,18 @@ class Main extends egret.DisplayObjectContainer {
         },this);
 
         let userStr = egret.localStorage.getItem('user');
+
+
+        
         if(userStr && userStr!='undefined'){
             let user = JSON.parse(userStr);
             Global.user = user;
             let token = user['token'];
             let roomid = user['roomid'] ? user['roomid'] : 0;
             var callback = function(){
-                Net.SocketUtil.enterGame(1000,token,roomid,function(ret){
-                    if(ret.code ==200 ){
-                        if(roomid>0){
+                if(roomid > 0 ){
+                    Net.SocketUtil.enterGame(1000,token,roomid,function(ret){
+                        if(ret.code ==200 ){
                             Net.SocketUtil.joinRoom(roomid,function(ret){
                                 if(ret.code ==200){
                                     LCP.LListener.getInstance().dispatchEvent(new LCP.LEvent(EventData.Data.JOIN_ROOM,{roomid:roomid,data:ret.data}));
@@ -175,10 +178,17 @@ class Main extends egret.DisplayObjectContainer {
                                 console.log('EventData.Data.JOIN_ROOM',ret);
 
                             });
+
                         }
-                    }
-                });
+                    });
+                }else{
+                    this.roomListBjlPanel = new RoomListBjlPanel();
+                    this.addChild(this.roomListBjlPanel);
+                    this.roomListBjlPanel.enterGame();
+
+                }
             }.bind(this);
+            
             if(token){
                 Net.SocketUtil.connect('127.0.0.1',9115,callback);
             }
