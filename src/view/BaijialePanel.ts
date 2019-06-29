@@ -400,6 +400,8 @@ class BaijialePanel extends eui.Component {
 
 		if(totalGold + this.selectedChipVal > this.roomConfig.max_bet){
 			console.log('已超过下注额',totalGold,this.roomConfig.max_bet);
+			TipsUtil.showTips('已超过下注额  '+this.roomConfig.max_bet,this);
+			
 			return false;		
 		}
 
@@ -458,11 +460,13 @@ class BaijialePanel extends eui.Component {
 				});
 				imgArr =[];
 				console.log(ret,'下注失败');
+				TipsUtil.showTips('下注失败',this);
 
 			}else{
 				this.userHeadPanel.gold -= coin;
 				this.betsTotal[pos]['gold']+=coin;
 				console.log('下注成功',pos,coin,chipType,num,this.betsTotal);
+				TipsUtil.showTips('下注成功 '+coin,this);
 			}
 		}.bind(this));
 	}

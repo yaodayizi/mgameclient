@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin class="LoginSkin" width="640" height="1138" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
 	<w:Config id="16b541b32b6"/>
-	<e:Image y="1" fillMode="scale" anchorOffsetX="0" width="638" anchorOffsetY="0" height="1135" source="resource/assets/common/bg112.png"/>
+	<e:Image y="1.5" fillMode="scale" anchorOffsetX="0" width="638" anchorOffsetY="0" height="1135" source="resource/assets/common/bg112.png"/>
 	<e:Rect width="228" height="45" x="250" y="431" anchorOffsetX="0" anchorOffsetY="0" fillColor="0xffffff"/>
 	<e:Rect width="228" height="42" x="250" y="486" anchorOffsetX="0" anchorOffsetY="0" fillColor="0xFFFFFF"/>
 	<e:EditableText id="username" width="212" height="41" text="" x="255" y="433" anchorOffsetX="0" anchorOffsetY="0" textColor="0x2b2323"/>
 	<e:EditableText id="password" width="212" height="41" text="" x="255" y="488.5" anchorOffsetX="0" anchorOffsetY="0" textColor="0x282020"/>
-	<e:Button id="loginBtn" label="login " x="262" y="561" height="40" skinName="skins.ButtonSkin" anchorOffsetX="0" width="107" anchorOffsetY="0"/>
-	<e:Button id="travelBtn" label="travel" x="386" y="562" skinName="skins.ButtonSkin" height="41" anchorOffsetX="0" width="106" anchorOffsetY="0"/>
+	<e:Button id="loginBtn" label="login " x="372" y="561" height="40" skinName="skins.ButtonSkin" anchorOffsetX="0" width="107" anchorOffsetY="0"/>
 	<e:Label text="用户名" x="133" y="436"/>
 	<e:Label text="密码" x="135" y="494"/>
 </e:Skin>
