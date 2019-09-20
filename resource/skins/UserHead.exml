@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="UserHead" width="264" height="99" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing">
+	<e:Rect width="264" height="100" x="0" y="0" anchorOffsetX="0" anchorOffsetY="0" fillAlpha="0.5"/>
+	<e:Image id="headImg" source="nt1_n_png" x="0" y="0"/>
+	<e:Label id="userName" text="username" x="96.01" y="18.46" anchorOffsetX="0" width="140.99" verticalAlign="middle" textAlign="left" size="19" rotation="0.38" anchorOffsetY="0" height="20.11"/>
+	<e:Label id="gold" text="Label" x="95.88" y="55" anchorOffsetX="0" width="147" textAlign="left" size="20" fontFamily="Verdana" textColor="0xdb8f06"/>
+</e:Skin>
