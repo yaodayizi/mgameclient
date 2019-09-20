@@ -2,7 +2,7 @@ class LoginPanel extends eui.Component {
 	public username:eui.EditableText;
 	public password:eui.EditableText;
 	public loginBtn:eui.Button;
-	public travelBtn:eui.Button;
+	//public travelBtn:eui.Button;
 
 	public constructor() {
 		super();
@@ -10,13 +10,13 @@ class LoginPanel extends eui.Component {
 		Net.SocketUtil.connect('127.0.0.1',9115);
 
 		
-
 		this.loginBtn.addEventListener(egret.TouchEvent.TOUCH_TAP,this.loginBtnClick,this);
 	}
 
 
 
 	private loginBtnClick(e){
+
         if (this.password.text == "" || this.password.text.length > 20 || this.password.text.length < 2) {
             let tip = TipsUtil.alert("请输入有效密码!",null,this);
             return;

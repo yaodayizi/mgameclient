@@ -120,5 +120,56 @@ module TipsUtil {
             };
         }
 
+  export function  createTextfield(size:number,color:number=0xffffff,VAgain:string=egret.VerticalAlign.MIDDLE,HAgain:string=egret.HorizontalAlign.CENTER,family: string = "Verdana"):egret.TextField
+  {
+
+           let textfield= new egret.TextField()
+
+            textfield.size = size;
+            textfield.textColor = color;
+            textfield.textAlign = egret.HorizontalAlign.RIGHT;
+            textfield.verticalAlign = egret.VerticalAlign.MIDDLE;
+            textfield.fontFamily = family;
+            textfield.cacheAsBitmap = true;
+            return textfield;
+
+  }
+
+  //顯示文字提示
+
+   export function showTips(tip:string,displayContainer):void
+
+   {
+
+    let maxW:number = displayContainer.stage.stageWidth;
+
+    let maxH:number = displayContainer.stage.stageHeight;
+
+    let textfield: egret.TextField = createTextfield(30);
+
+    textfield.text = tip;
+    textfield.textColor = 0xffffff;
+    textfield.width = textfield.textWidth;
+    textfield.height = textfield.textHeight;
+
+   //居右顯示
+
+     textfield.x = (maxW - textfield.width)-20 ;
+     textfield.y = (maxH - textfield.height) * 0.5;
+
+   //  core.LayerCenter 爲遊戲場景層
+
+    displayContainer.stage.addChild(textfield);
+
+   //使用egret的自身緩動
+
+   // 在緩動結束是清除創建的文本
+
+   egret.Tween.get(textfield).to({ y: maxW * 0.4, alpha: 0 }, 1000, egret.Ease.circIn).call(function (target: egret.TextField): void {
+                target.parent.removeChild(target);
+            }, this, [textfield]);
+
+   }
+
     
 }
