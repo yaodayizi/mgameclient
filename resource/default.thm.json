@@ -1,13 +1,15 @@
 {
-    "skins": {
-        "eui.Button": "resource/skins/ButtonSkin.exml"
-    },
-    "autoGenerateExmlsList": true,
-    "exmls": [
-        "resource/skins/Baijiale.exml",
-        "resource/skins/ButtonSkin.exml",
-        "resource/skins/LoginSkin.exml",
-        "resource/skins/UserHead.exml"
-    ],
-    "path": "resource/default.thm.json"
+	"skins": {
+		"eui.Button": "resource/skins/ButtonSkin.exml"
+	},
+	"autoGenerateExmlsList": true,
+	"exmls": [
+		"resource/skins/Baijiale.exml",
+		"resource/skins/ButtonSkin.exml",
+		"resource/skins/LoginSkin.exml",
+		"resource/skins/RoomBjl.exml",
+		"resource/skins/RoomListBjll.exml",
+		"resource/skins/UserHead.exml"
+	],
+	"path": "resource/default.thm.json"
 }

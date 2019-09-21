@@ -129,7 +129,7 @@ class Main extends egret.DisplayObjectContainer {
             //let baijialePanel:BaijialePanel = new BaijialePanel();
             this.roomListBjlPanel = new RoomListBjlPanel();
             this.addChild(this.roomListBjlPanel);
-            this.roomListBjlPanel.enterGame();
+            this.roomListBjlPanel.roomList();
 
         },this);
 
@@ -184,7 +184,7 @@ class Main extends egret.DisplayObjectContainer {
                 }else{
                     this.roomListBjlPanel = new RoomListBjlPanel();
                     this.addChild(this.roomListBjlPanel);
-                    this.roomListBjlPanel.enterGame();
+                    this.roomListBjlPanel.roomList();
 
                 }
             }.bind(this);
